@@ -1,7 +1,7 @@
 package com.gamerfinder.gamerfinder.model
 
 data class Game(
-    val id: Long,
+    val id: Int,
     val name: String,
     val coverUrl: String,
     val logoUrl: String,
