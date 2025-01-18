@@ -38,7 +38,7 @@ To run this project locally:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/game-rooms-api.git
+   git clone https://github.com/claudiogaalvao/gamerfinderapi.git
    cd game-rooms-api
 
 2. Build the project:
