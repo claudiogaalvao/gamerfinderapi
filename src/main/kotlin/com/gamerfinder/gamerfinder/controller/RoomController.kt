@@ -1,10 +1,10 @@
 package com.gamerfinder.gamerfinder.controller
 
-import com.gamerfinder.gamerfinder.dtos.request.CreateRoomRequest
-import com.gamerfinder.gamerfinder.dtos.request.UpdateRoomRequest
-import com.gamerfinder.gamerfinder.dtos.response.CreateRoomResponse
-import com.gamerfinder.gamerfinder.dtos.response.RoomResponse
-import com.gamerfinder.gamerfinder.dtos.response.UpdateRoomResponse
+import com.gamerfinder.gamerfinder.dtos.input.CreateRoomInput
+import com.gamerfinder.gamerfinder.dtos.input.UpdateRoomInput
+import com.gamerfinder.gamerfinder.dtos.output.CreateRoomOutput
+import com.gamerfinder.gamerfinder.dtos.output.RoomOutput
+import com.gamerfinder.gamerfinder.dtos.output.UpdateRoomOutput
 import com.gamerfinder.gamerfinder.service.RoomService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -28,7 +28,7 @@ class RoomController(
 ) {
 
     @GetMapping("/{gameId}")
-    fun getRooms(@PathVariable gameId: Int): List<RoomResponse> {
+    fun getRooms(@PathVariable gameId: Int): List<RoomOutput> {
         return service.getRooms(gameId)
     }
 
@@ -36,15 +36,15 @@ class RoomController(
     fun createRoom(
         @RequestParam gameId: Int,
         @RequestParam playerId: Int,
-        @RequestBody @Valid request: CreateRoomRequest,
+        @RequestBody @Valid input: CreateRoomInput,
         uriBuilder: UriComponentsBuilder
-    ): ResponseEntity<CreateRoomResponse> {
+    ): ResponseEntity<CreateRoomOutput> {
         // check if receiving gameId and playerId
         // check if receiving room with all fields
         val roomCreatedResponse = service.createRoom(
             gameId = gameId,
             playerId = playerId,
-            request = request
+            input = input
         )
         val uri = uriBuilder
             .path("/rooms/${roomCreatedResponse.id}")
@@ -56,9 +56,9 @@ class RoomController(
     @PutMapping("/{roomId}")
     fun update(
         @PathVariable roomId: String,
-        @RequestBody @Valid request: UpdateRoomRequest
-    ): ResponseEntity<UpdateRoomResponse> {
-        val room = service.update(roomId, request)
+        @RequestBody @Valid input: UpdateRoomInput
+    ): ResponseEntity<UpdateRoomOutput> {
+        val room = service.update(roomId, input)
         return ResponseEntity.ok(room)
     }
 

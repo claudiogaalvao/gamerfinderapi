@@ -1,6 +1,6 @@
 package com.gamerfinder.gamerfinder.domain
 
-import com.gamerfinder.gamerfinder.dtos.response.RoomResponse
+import com.gamerfinder.gamerfinder.dtos.output.RoomOutput
 import java.time.LocalDateTime
 
 data class Room(
@@ -14,7 +14,7 @@ data class Room(
     val createdAt: LocalDateTime,
 )
 
-fun Room.toResponse() = RoomResponse(
+fun Room.toResponse() = RoomOutput(
     id = id,
     playerHostName = playerHost.name,
     description = description,

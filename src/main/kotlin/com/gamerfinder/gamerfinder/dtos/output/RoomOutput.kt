@@ -1,6 +1,6 @@
-package com.gamerfinder.gamerfinder.dtos.response
+package com.gamerfinder.gamerfinder.dtos.output
 
-data class RoomResponse(
+data class RoomOutput(
     val id: String,
     val playerHostName: String,
     val description: String,

@@ -29,4 +29,12 @@ class RoomRepository {
     fun exists(roomId: String): Boolean {
         return rooms.any { it.id == roomId }
     }
+
+    fun existsByPlayerId(playerId: Int): Boolean {
+        return rooms.any { it.playerHost.id == playerId }
+    }
+
+    fun getRoomByPlayerId(playerId: Int): Room {
+        return rooms.first { it.playerHost.id == playerId }
+    }
 }

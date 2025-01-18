@@ -1,7 +1,7 @@
 package com.gamerfinder.gamerfinder.service
 
 import com.gamerfinder.gamerfinder.domain.toSummaryResponse
-import com.gamerfinder.gamerfinder.dtos.response.GameSummaryResponse
+import com.gamerfinder.gamerfinder.dtos.output.GameSummaryOutput
 import com.gamerfinder.gamerfinder.repository.GameRepository
 import org.springframework.stereotype.Service
 
@@ -10,7 +10,7 @@ class GameService(
     private val gameRepository: GameRepository = GameRepository()
 ) {
 
-    fun getGames(): List<GameSummaryResponse> {
+    fun getGames(): List<GameSummaryOutput> {
         return gameRepository.getAll().toSummaryResponse()
     }
 

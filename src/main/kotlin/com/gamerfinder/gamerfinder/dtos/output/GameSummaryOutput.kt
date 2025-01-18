@@ -1,6 +1,6 @@
-package com.gamerfinder.gamerfinder.dtos.response
+package com.gamerfinder.gamerfinder.dtos.output
 
-class GameSummaryResponse(
+class GameSummaryOutput(
     val id: Int,
     val name: String,
     val bannerUrl: String,

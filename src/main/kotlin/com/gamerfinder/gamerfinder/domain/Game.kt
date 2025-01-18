@@ -1,6 +1,6 @@
 package com.gamerfinder.gamerfinder.domain
 
-import com.gamerfinder.gamerfinder.dtos.response.GameSummaryResponse
+import com.gamerfinder.gamerfinder.dtos.output.GameSummaryOutput
 
 data class Game(
     val id: Int,
@@ -17,7 +17,7 @@ data class Game(
 )
 
 fun List<Game>.toSummaryResponse() = mapIndexed { index, game ->
-    GameSummaryResponse(
+    GameSummaryOutput(
         id = game.id,
         name = game.name,
         bannerUrl = game.bannerUrl,

@@ -10,6 +10,20 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 @ControllerAdvice
 class GlobalExceptionHandler {
 
+    @ExceptionHandler(RoomAlreadyExistsException::class)
+    fun handleRoomAlreadyExistsException(
+        exception: RoomAlreadyExistsException,
+        request: HttpServletRequest
+    ): ResponseEntity<ErrorResponse> {
+        val error = ErrorResponse(
+            error = "Conflict",
+            message = exception.message ?: "Room already exists",
+            status = HttpStatus.CONFLICT.value(),
+            path = request.requestURI,
+        )
+        return ResponseEntity(error, HttpStatus.CONFLICT)
+    }
+
     @ExceptionHandler(ResourceNotFoundException::class)
     fun handleResourceNotFoundException(
         exception: ResourceNotFoundException,

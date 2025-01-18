@@ -1,6 +1,6 @@
-package com.gamerfinder.gamerfinder.dtos.response
+package com.gamerfinder.gamerfinder.dtos.output
 
-data class UpdateRoomResponse(
+data class UpdateRoomOutput(
     val description: String,
     val spots: Int,
     val mode: String,
