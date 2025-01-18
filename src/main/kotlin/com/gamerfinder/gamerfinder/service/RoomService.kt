@@ -10,6 +10,8 @@ import com.gamerfinder.gamerfinder.repository.RoomRepository
 import com.gamerfinder.gamerfinder.dtos.response.CreateRoomResponse
 import com.gamerfinder.gamerfinder.dtos.response.RoomResponse
 import com.gamerfinder.gamerfinder.dtos.response.UpdateRoomResponse
+import com.gamerfinder.gamerfinder.exception.ResourceNotFoundException
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.util.UUID
@@ -49,6 +51,9 @@ class RoomService(
     }
 
     fun update(roomId: String, request: UpdateRoomRequest): UpdateRoomResponse {
+        if (roomRepository.exists(roomId).not()) {
+            throw ResourceNotFoundException("Room with id $roomId not found!")
+        }
         val roomToUpdate = roomRepository.getById(roomId)
         val room = roomToUpdate.copy(
             description = request.description,
@@ -65,8 +70,12 @@ class RoomService(
         )
     }
 
-    fun delete(roomId: String) {
+    fun delete(roomId: String): ResponseEntity<Any> {
+        if (roomRepository.exists(roomId).not()) {
+            throw ResourceNotFoundException("Room with id $roomId not found!")
+        }
         roomRepository.deleteRoom(roomId)
+        return ResponseEntity.noContent().build()
     }
 
 }

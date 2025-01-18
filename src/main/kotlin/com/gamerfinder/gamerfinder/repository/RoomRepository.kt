@@ -25,4 +25,8 @@ class RoomRepository {
     fun deleteRoom(roomId: String) {
         rooms = rooms.filter { it.id != roomId }
     }
+
+    fun exists(roomId: String): Boolean {
+        return rooms.any { it.id == roomId }
+    }
 }
