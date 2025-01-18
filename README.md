@@ -39,7 +39,7 @@ To run this project locally:
 
    ```bash
    git clone https://github.com/claudiogaalvao/gamerfinderapi.git
-   cd game-rooms-api
+   cd gamerfinderapi
 
 2. Build the project:
 
