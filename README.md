@@ -12,6 +12,11 @@ The API exposes the following endpoints:
 - **PUT /rooms/{id}**: Update a room's information.
 - **DELETE /rooms/{id}**: Remove a room.
 
+## API Documentation
+
+You can find the collection of the API endpoints mapped out in Postman at the following link:  
+[Game Rooms API Collection - Postman](https://grey-shuttle-689501.postman.co/workspace/My-Workspace~145a0d82-6526-4d94-862c-03dcca93ea43/collection/7263376-0f4ff2e1-1796-4a53-ad76-05c0dc49c875?action=share&creator=7263376)
+
 ## Features
 
 - **Game & Room Management**: Players can create and manage game rooms.
