@@ -1,6 +1,6 @@
 package com.gamerfinder.gamerfinder.repository
 
-import com.gamerfinder.gamerfinder.model.Player
+import com.gamerfinder.gamerfinder.domain.Player
 
 class PlayerRepository {
 

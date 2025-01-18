@@ -1,7 +1,6 @@
 package com.gamerfinder.gamerfinder.service
 
-import com.gamerfinder.gamerfinder.model.Game
-import com.gamerfinder.gamerfinder.model.Platforms
+import com.gamerfinder.gamerfinder.domain.Game
 import org.springframework.stereotype.Service
 
 @Service

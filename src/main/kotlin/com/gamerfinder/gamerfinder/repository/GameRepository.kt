@@ -1,7 +1,7 @@
 package com.gamerfinder.gamerfinder.repository
 
-import com.gamerfinder.gamerfinder.model.Game
-import com.gamerfinder.gamerfinder.model.Platforms
+import com.gamerfinder.gamerfinder.domain.Game
+import com.gamerfinder.gamerfinder.domain.Platforms
 
 
 class GameRepository {

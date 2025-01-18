@@ -1,6 +1,6 @@
 package com.gamerfinder.gamerfinder.controller
 
-import com.gamerfinder.gamerfinder.model.Game
+import com.gamerfinder.gamerfinder.domain.Game
 import com.gamerfinder.gamerfinder.service.GameService
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping

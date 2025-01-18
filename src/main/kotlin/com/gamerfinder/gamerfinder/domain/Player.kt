@@ -1,4 +1,4 @@
-package com.gamerfinder.gamerfinder.model
+package com.gamerfinder.gamerfinder.domain
 
 data class Player(
     val id: Int,

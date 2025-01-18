@@ -1,6 +1,6 @@
 package com.gamerfinder.gamerfinder.repository
 
-import com.gamerfinder.gamerfinder.model.Room
+import com.gamerfinder.gamerfinder.domain.Room
 
 class RoomRepository {
 
@@ -12,5 +12,17 @@ class RoomRepository {
 
     fun saveRoom(room: Room) {
         rooms = rooms + room
+    }
+
+    fun getById(roomId: String): Room {
+        return rooms.first { it.id == roomId }
+    }
+
+    fun updateRoom(updatedRoom: Room) {
+        rooms = rooms.map { if (it.id == updatedRoom.id) updatedRoom else it }
+    }
+
+    fun deleteRoom(roomId: String) {
+        rooms = rooms.filter { it.id != roomId }
     }
 }

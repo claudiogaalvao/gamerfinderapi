@@ -1,10 +1,15 @@
 package com.gamerfinder.gamerfinder.service
 
-import com.gamerfinder.gamerfinder.dto.RoomDto
-import com.gamerfinder.gamerfinder.model.Room
+import com.gamerfinder.gamerfinder.dtos.request.CreateRoomRequest
+import com.gamerfinder.gamerfinder.domain.Room
+import com.gamerfinder.gamerfinder.domain.toResponse
+import com.gamerfinder.gamerfinder.dtos.request.UpdateRoomRequest
 import com.gamerfinder.gamerfinder.repository.GameRepository
 import com.gamerfinder.gamerfinder.repository.PlayerRepository
 import com.gamerfinder.gamerfinder.repository.RoomRepository
+import com.gamerfinder.gamerfinder.dtos.response.CreateRoomResponse
+import com.gamerfinder.gamerfinder.dtos.response.RoomResponse
+import com.gamerfinder.gamerfinder.dtos.response.UpdateRoomResponse
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.util.UUID
@@ -16,27 +21,52 @@ class RoomService(
     private val roomRepository: RoomRepository = RoomRepository()
 ) {
 
-    fun getRooms(gameId: Int): List<Room> {
-        return roomRepository.getRooms(gameId)
+    fun getRooms(gameId: Int): List<RoomResponse> {
+        return roomRepository.getRooms(gameId).map { it.toResponse() }
     }
 
     fun createRoom(
         gameId: Int,
         playerId: Int,
-        room: RoomDto
-    ) {
+        request: CreateRoomRequest
+    ): CreateRoomResponse {
+        // check if the player already have a room created
         val player = playerRepository.getById(playerId)
-        val newRoom = Room(
+        val room = Room(
             id = UUID.randomUUID().toString(),
             gameId = gameId,
             playerHost = player,
+            description = request.description,
+            spots = request.spots,
+            mode = request.mode,
+            ranks = request.ranks,
+            createdAt = LocalDateTime.now()
+        )
+        roomRepository.saveRoom(room)
+        return CreateRoomResponse(
+            id = room.id
+        )
+    }
+
+    fun update(roomId: String, request: UpdateRoomRequest): UpdateRoomResponse {
+        val roomToUpdate = roomRepository.getById(roomId)
+        val room = roomToUpdate.copy(
+            description = request.description,
+            spots = request.spots,
+            mode = request.mode,
+            ranks = request.ranks
+        )
+        roomRepository.updateRoom(room)
+        return UpdateRoomResponse(
             description = room.description,
             spots = room.spots,
             mode = room.mode,
-            ranks = room.ranks,
-            createdAt = LocalDateTime.now()
+            ranks = room.ranks
         )
-        roomRepository.saveRoom(newRoom)
+    }
+
+    fun delete(roomId: String) {
+        roomRepository.deleteRoom(roomId)
     }
 
 }
