@@ -37,4 +37,14 @@ class RoomRepository {
     fun getRoomByPlayerId(playerId: Int): Room {
         return rooms.first { it.playerHost.id == playerId }
     }
+
+    fun isHost(roomId: String, playerId: Int): Boolean {
+        return rooms.any { it.id == roomId && it.playerHost.id == playerId }
+    }
+
+    fun isPlayerInRoom(roomId: String, playerId: Int): Boolean {
+        return rooms.any { room -> room.id == roomId && room.playersIdJoined.any { it == playerId } }
+    }
+
+
 }

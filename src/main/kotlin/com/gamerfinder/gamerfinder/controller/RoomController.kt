@@ -1,8 +1,10 @@
 package com.gamerfinder.gamerfinder.controller
 
+import com.gamerfinder.gamerfinder.dtos.input.CreateJoinRequestInput
 import com.gamerfinder.gamerfinder.dtos.input.CreateRoomInput
 import com.gamerfinder.gamerfinder.dtos.input.UpdateRoomInput
 import com.gamerfinder.gamerfinder.dtos.output.CreateRoomOutput
+import com.gamerfinder.gamerfinder.dtos.output.PendingJoinRequestOutput
 import com.gamerfinder.gamerfinder.dtos.output.RoomOutput
 import com.gamerfinder.gamerfinder.dtos.output.UpdateRoomOutput
 import com.gamerfinder.gamerfinder.service.RoomService
@@ -32,7 +34,7 @@ class RoomController(
         return service.getRooms(gameId)
     }
 
-    @PostMapping
+    @PostMapping  // TODO requires authentication
     fun createRoom(
         @RequestParam gameId: Int,
         @RequestParam playerId: Int,
@@ -53,7 +55,7 @@ class RoomController(
         return ResponseEntity.created(uri).body(roomCreatedResponse)
     }
 
-    @PutMapping("/{roomId}")
+    @PutMapping("/{roomId}")  // TODO requires authentication
     fun update(
         @PathVariable roomId: String,
         @RequestBody @Valid input: UpdateRoomInput
@@ -62,12 +64,45 @@ class RoomController(
         return ResponseEntity.ok(room)
     }
 
-    @DeleteMapping("/{roomId}")
+    @DeleteMapping("/{roomId}")  // TODO requires authentication
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun delete(
         @PathVariable roomId: String
     ) {
         service.delete(roomId)
     }
+
+    @PostMapping("/{roomId}/join") // TODO requires authentication
+    fun requestToJoinRoom(
+        @PathVariable roomId: String,
+        @RequestBody input: CreateJoinRequestInput,
+        uriBuilder: UriComponentsBuilder
+    ): ResponseEntity<Any> {
+        val joinRequest = service.requestToJoinRoom(roomId, input)
+        val uri = uriBuilder
+            .path("/$roomId/requests/${joinRequest.id}")
+            .build()
+            .toUri()
+        return ResponseEntity.created(uri).body(joinRequest)
+    }
+
+    @GetMapping("/{roomId}/pending-requests") // TODO requires authentication
+    fun getJoinRequests(roomId: String): List<PendingJoinRequestOutput> {
+        return service.getPendingJoinRequests(roomId)
+    }
+
+    @PutMapping("/{roomId}/requests/{requestId}/accept") // TODO requires authentication
+    fun acceptJoinRequest(
+        @PathVariable roomId: String,
+        @PathVariable requestId: String
+    ): ResponseEntity<Any> {
+        service.acceptJoinRequest(roomId, requestId)
+        return ResponseEntity.noContent().build()
+    }
+
+//    fun rejectJoinRequest(roomId: String, requestId: String): ResponseEntity<Any> {
+//        service.rejectJoinRequest(roomId, requestId)
+//        return ResponseEntity.noContent().build()
+//    }
 
 }

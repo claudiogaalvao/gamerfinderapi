@@ -7,6 +7,7 @@ data class Room(
     val id: String,
     val gameId: Int,
     val playerHost: Player,
+    val playersIdJoined: List<Int> = emptyList(),
     val description: String,
     val spots: Int,
     val mode: String,
@@ -14,7 +15,7 @@ data class Room(
     val createdAt: LocalDateTime,
 )
 
-fun Room.toResponse() = RoomOutput(
+fun Room.toOutput() = RoomOutput(
     id = id,
     playerHostName = playerHost.name,
     description = description,
