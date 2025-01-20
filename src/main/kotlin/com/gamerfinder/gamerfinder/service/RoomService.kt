@@ -26,18 +26,18 @@ import java.util.UUID
 @Service
 class RoomService(
     private val roomRepository: RoomRepository = RoomRepository(),
-    private val gameRepository: GameRepository = GameRepository(),
+    private val gameRepository: GameRepository,
     private val playerRepository: PlayerRepository = PlayerRepository(),
     private val joinRequestRepository: JoinRequestRepository = JoinRequestRepository()
 ) {
 
-    fun getRooms(gameId: Int): List<RoomOutput> {
+    fun getRooms(gameId: Long): List<RoomOutput> {
         return roomRepository.getRooms(gameId).map { it.toOutput() }
     }
 
     fun createRoom(
-        gameId: Int,
-        playerId: Int,
+        gameId: Long,
+        playerId: Long,
         input: CreateRoomInput
     ): CreateRoomOutput {
         if (roomRepository.existsByPlayerId(playerId)) {
@@ -45,7 +45,6 @@ class RoomService(
         }
         val player = playerRepository.getById(playerId)
         val room = Room(
-            id = UUID.randomUUID().toString(),
             gameId = gameId,
             playerHost = player,
             description = input.description,
@@ -54,13 +53,13 @@ class RoomService(
             ranks = input.ranks,
             createdAt = LocalDateTime.now()
         )
-        roomRepository.saveRoom(room)
+        val roomId = roomRepository.saveRoom(room)
         return CreateRoomOutput(
-            id = room.id
+            id = roomId
         )
     }
 
-    fun update(roomId: String, input: UpdateRoomInput): UpdateRoomOutput {
+    fun update(roomId: Long, input: UpdateRoomInput): UpdateRoomOutput {
         if (roomRepository.exists(roomId).not()) {
             throw ResourceNotFoundException("Room with id $roomId not found!")
         }
@@ -80,7 +79,7 @@ class RoomService(
         )
     }
 
-    fun delete(roomId: String): ResponseEntity<Any> {
+    fun delete(roomId: Long): ResponseEntity<Any> {
         if (roomRepository.exists(roomId).not()) {
             throw ResourceNotFoundException("Room with id $roomId not found!")
         }
@@ -89,7 +88,7 @@ class RoomService(
     }
 
     fun requestToJoinRoom(
-        roomId: String,
+        roomId: Long,
         input: CreateJoinRequestInput
     ): CreateJoinRequestOutput {
         if (roomRepository.exists(roomId).not()) {
@@ -112,23 +111,17 @@ class RoomService(
         }
         val position = joinRequestRepository.getPlayersInQueueCount(roomId) + 1
         val joinRequest = JoinRequest(
-            id = UUID.randomUUID().toString(),
             roomId = roomId,
             playerId = input.playerId,
             status = JoinRequestStatus.PENDING,
             queuePosition = position,
             createdAt = LocalDateTime.now()
         )
-        joinRequestRepository.saveJoinRequest(joinRequest)
+        val joinRequestId = joinRequestRepository.saveJoinRequest(joinRequest)
         return CreateJoinRequestOutput(
-            id = joinRequest.id,
+            id = joinRequestId,
             queuePosition = joinRequest.queuePosition
         )
-    }
-
-    fun getPendingJoinRequests(roomId: String): List<PendingJoinRequestOutput> {
-        val pendingJoinRequests = joinRequestRepository.getPendingJoinRequestsByRoomId(roomId)
-        return pendingJoinRequests.toOutput()
     }
 
     fun acceptJoinRequest(roomId: String, requestId: String) {

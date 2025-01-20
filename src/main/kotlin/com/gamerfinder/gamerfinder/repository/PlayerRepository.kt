@@ -4,7 +4,7 @@ import com.gamerfinder.gamerfinder.domain.Player
 
 class PlayerRepository {
 
-    fun getById(id: Int) = getPlayersMock().first { it.id == id }
+    fun getById(id: Long) = getPlayersMock().first { it.id == id }
 
 }
 

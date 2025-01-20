@@ -1,7 +1,7 @@
 package com.gamerfinder.gamerfinder.dtos.output
 
 class GameSummaryOutput(
-    val id: Int,
+    val id: Long,
     val name: String,
     val bannerUrl: String,
     val subscriptions: Int? = null,

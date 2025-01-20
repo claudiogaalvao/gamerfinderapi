@@ -8,6 +8,7 @@ import com.gamerfinder.gamerfinder.dtos.output.PendingJoinRequestOutput
 import com.gamerfinder.gamerfinder.dtos.output.RoomOutput
 import com.gamerfinder.gamerfinder.dtos.output.UpdateRoomOutput
 import com.gamerfinder.gamerfinder.service.RoomService
+import jakarta.transaction.Transactional
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -30,14 +31,15 @@ class RoomController(
 ) {
 
     @GetMapping("/{gameId}")
-    fun getRooms(@PathVariable gameId: Int): List<RoomOutput> {
+    fun getRooms(@PathVariable gameId: Long): List<RoomOutput> {
         return service.getRooms(gameId)
     }
 
     @PostMapping  // TODO requires authentication
+    @Transactional
     fun createRoom(
-        @RequestParam gameId: Int,
-        @RequestParam playerId: Int,
+        @RequestParam gameId: Long,
+        @RequestParam playerId: Long,
         @RequestBody @Valid input: CreateRoomInput,
         uriBuilder: UriComponentsBuilder
     ): ResponseEntity<CreateRoomOutput> {
@@ -56,8 +58,9 @@ class RoomController(
     }
 
     @PutMapping("/{roomId}")  // TODO requires authentication
+    @Transactional
     fun update(
-        @PathVariable roomId: String,
+        @PathVariable roomId: Long,
         @RequestBody @Valid input: UpdateRoomInput
     ): ResponseEntity<UpdateRoomOutput> {
         val room = service.update(roomId, input)
@@ -65,16 +68,18 @@ class RoomController(
     }
 
     @DeleteMapping("/{roomId}")  // TODO requires authentication
+    @Transactional
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun delete(
-        @PathVariable roomId: String
+        @PathVariable roomId: Long
     ) {
         service.delete(roomId)
     }
 
     @PostMapping("/{roomId}/join") // TODO requires authentication
+    @Transactional
     fun requestToJoinRoom(
-        @PathVariable roomId: String,
+        @PathVariable roomId: Long,
         @RequestBody input: CreateJoinRequestInput,
         uriBuilder: UriComponentsBuilder
     ): ResponseEntity<Any> {
@@ -86,12 +91,8 @@ class RoomController(
         return ResponseEntity.created(uri).body(joinRequest)
     }
 
-    @GetMapping("/{roomId}/pending-requests") // TODO requires authentication
-    fun getJoinRequests(roomId: String): List<PendingJoinRequestOutput> {
-        return service.getPendingJoinRequests(roomId)
-    }
-
     @PutMapping("/{roomId}/requests/{requestId}/accept") // TODO requires authentication
+    @Transactional
     fun acceptJoinRequest(
         @PathVariable roomId: String,
         @PathVariable requestId: String
@@ -99,10 +100,5 @@ class RoomController(
         service.acceptJoinRequest(roomId, requestId)
         return ResponseEntity.noContent().build()
     }
-
-//    fun rejectJoinRequest(roomId: String, requestId: String): ResponseEntity<Any> {
-//        service.rejectJoinRequest(roomId, requestId)
-//        return ResponseEntity.noContent().build()
-//    }
 
 }

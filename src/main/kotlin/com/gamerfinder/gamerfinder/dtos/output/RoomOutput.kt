@@ -1,7 +1,7 @@
 package com.gamerfinder.gamerfinder.dtos.output
 
 data class RoomOutput(
-    val id: String,
+    val id: Long?,
     val playerHostName: String,
     val description: String,
     val spots: Int,

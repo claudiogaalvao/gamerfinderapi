@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service
 
 @Service
 class GameService(
-    private val gameRepository: GameRepository = GameRepository()
+    private val gameRepository: GameRepository
 ) {
 
     fun getGames(): List<GameSummaryOutput> {
-        return gameRepository.getAll().toSummaryResponse()
+        return gameRepository.findAll().toSummaryResponse()
     }
 
 }
