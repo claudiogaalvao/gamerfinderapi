@@ -18,15 +18,14 @@ import com.gamerfinder.gamerfinder.repository.GameRepository
 import com.gamerfinder.gamerfinder.repository.JoinRequestRepository
 import com.gamerfinder.gamerfinder.repository.PlayerRepository
 import com.gamerfinder.gamerfinder.repository.RoomRepository
-import com.gamerfinder.gamerfinder.repository.RoomRepositoryMock
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
+import kotlin.jvm.optionals.getOrNull
 
 @Service
 class RoomService(
     private val roomRepository: RoomRepository,
-    private val roomRepositoryMock: RoomRepositoryMock = RoomRepositoryMock(),
     private val gameRepository: GameRepository,
     private val playerRepository: PlayerRepository,
     private val joinRequestRepository: JoinRequestRepository = JoinRequestRepository()
@@ -95,16 +94,16 @@ class RoomService(
         roomId: Long,
         input: CreateJoinRequestInput
     ): CreateJoinRequestOutput {
-        if (roomRepositoryMock.exists(roomId).not()) {
+        if (roomRepository.existsById(roomId).not()) {
             throw ResourceNotFoundException("Room with id $roomId not found!")
         }
-        if (roomRepositoryMock.isHost(roomId, input.playerId)) {
+        if (roomRepository.isPlayerHostOfRoom(roomId, input.playerId)) {
             throw IllegalArgumentException("Player with id ${input.playerId} is the host of the room!")
         }
-        if (roomRepositoryMock.isPlayerInRoom(roomId, input.playerId)) {
+        if (roomRepository.existsPlayerInRoom(roomId, input.playerId)) {
             throw IllegalArgumentException("Player with id ${input.playerId} is already in the room!")
         }
-        if (roomRepositoryMock.getById(roomId).spots == 0) {
+        if (roomRepository.findById(roomId).getOrNull()?.spots == 0) {
             throw IllegalArgumentException("Room with id $roomId is full!")
         }
         if (joinRequestRepository.existsPendingRequest(input.playerId)) {
