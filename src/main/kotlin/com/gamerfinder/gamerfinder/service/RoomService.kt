@@ -9,7 +9,6 @@ import com.gamerfinder.gamerfinder.dtos.input.CreateRoomInput
 import com.gamerfinder.gamerfinder.dtos.input.UpdateRoomInput
 import com.gamerfinder.gamerfinder.dtos.output.CreateJoinRequestOutput
 import com.gamerfinder.gamerfinder.dtos.output.CreateRoomOutput
-import com.gamerfinder.gamerfinder.dtos.output.PendingJoinRequestOutput
 import com.gamerfinder.gamerfinder.dtos.output.RoomOutput
 import com.gamerfinder.gamerfinder.dtos.output.UpdateRoomOutput
 import com.gamerfinder.gamerfinder.exception.ResourceNotFoundException
@@ -18,21 +17,22 @@ import com.gamerfinder.gamerfinder.repository.GameRepository
 import com.gamerfinder.gamerfinder.repository.JoinRequestRepository
 import com.gamerfinder.gamerfinder.repository.PlayerRepository
 import com.gamerfinder.gamerfinder.repository.RoomRepository
+import com.gamerfinder.gamerfinder.repository.RoomRepositoryMock
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
-import java.util.UUID
 
 @Service
 class RoomService(
-    private val roomRepository: RoomRepository = RoomRepository(),
+    private val roomRepository: RoomRepository,
+    private val roomRepositoryMock: RoomRepositoryMock = RoomRepositoryMock(),
     private val gameRepository: GameRepository,
-    private val playerRepository: PlayerRepository = PlayerRepository(),
+    private val playerRepository: PlayerRepository,
     private val joinRequestRepository: JoinRequestRepository = JoinRequestRepository()
 ) {
 
     fun getRooms(gameId: Long): List<RoomOutput> {
-        return roomRepository.getRooms(gameId).map { it.toOutput() }
+        return roomRepositoryMock.getRooms(gameId).map { it.toOutput() }
     }
 
     fun createRoom(
@@ -40,10 +40,12 @@ class RoomService(
         playerId: Long,
         input: CreateRoomInput
     ): CreateRoomOutput {
-        if (roomRepository.existsByPlayerId(playerId)) {
+        if (roomRepositoryMock.existsByPlayerId(playerId)) {
             throw RoomAlreadyExistsException("Player with id $playerId already have a room created!")
         }
-        val player = playerRepository.getById(playerId)
+        val player = playerRepository.findById(playerId).orElseThrow {
+            ResourceNotFoundException("Player with id $playerId not found!")
+        }
         val room = Room(
             gameId = gameId,
             playerHost = player,
@@ -53,24 +55,27 @@ class RoomService(
             ranks = input.ranks,
             createdAt = LocalDateTime.now()
         )
-        val roomId = roomRepository.saveRoom(room)
+        val savedRoom = roomRepository.save(room)
+        if (savedRoom.id == null) {
+            throw IllegalArgumentException("Something went wrong when try to save room!")
+        }
         return CreateRoomOutput(
-            id = roomId
+            id = savedRoom.id
         )
     }
 
     fun update(roomId: Long, input: UpdateRoomInput): UpdateRoomOutput {
-        if (roomRepository.exists(roomId).not()) {
+        if (roomRepositoryMock.exists(roomId).not()) {
             throw ResourceNotFoundException("Room with id $roomId not found!")
         }
-        val roomToUpdate = roomRepository.getById(roomId)
+        val roomToUpdate = roomRepositoryMock.getById(roomId)
         val room = roomToUpdate.copy(
             description = input.description,
             spots = input.spots,
             mode = input.mode,
             ranks = input.ranks
         )
-        roomRepository.updateRoom(room)
+        roomRepositoryMock.updateRoom(room)
         return UpdateRoomOutput(
             description = room.description,
             spots = room.spots,
@@ -80,10 +85,10 @@ class RoomService(
     }
 
     fun delete(roomId: Long): ResponseEntity<Any> {
-        if (roomRepository.exists(roomId).not()) {
+        if (roomRepositoryMock.exists(roomId).not()) {
             throw ResourceNotFoundException("Room with id $roomId not found!")
         }
-        roomRepository.deleteRoom(roomId)
+        roomRepositoryMock.deleteRoom(roomId)
         return ResponseEntity.noContent().build()
     }
 
@@ -91,16 +96,16 @@ class RoomService(
         roomId: Long,
         input: CreateJoinRequestInput
     ): CreateJoinRequestOutput {
-        if (roomRepository.exists(roomId).not()) {
+        if (roomRepositoryMock.exists(roomId).not()) {
             throw ResourceNotFoundException("Room with id $roomId not found!")
         }
-        if (roomRepository.isHost(roomId, input.playerId)) {
+        if (roomRepositoryMock.isHost(roomId, input.playerId)) {
             throw IllegalArgumentException("Player with id ${input.playerId} is the host of the room!")
         }
-        if (roomRepository.isPlayerInRoom(roomId, input.playerId)) {
+        if (roomRepositoryMock.isPlayerInRoom(roomId, input.playerId)) {
             throw IllegalArgumentException("Player with id ${input.playerId} is already in the room!")
         }
-        if (roomRepository.getById(roomId).spots == 0) {
+        if (roomRepositoryMock.getById(roomId).spots == 0) {
             throw IllegalArgumentException("Room with id $roomId is full!")
         }
         if (joinRequestRepository.existsPendingRequest(input.playerId)) {
