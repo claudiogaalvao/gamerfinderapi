@@ -1,5 +1,6 @@
 package com.gamerfinder.gamerfinder.service
 
+import com.gamerfinder.gamerfinder.constants.MAX_ROOM_TIME_IN_MINUTES
 import com.gamerfinder.gamerfinder.domain.JoinRequest
 import com.gamerfinder.gamerfinder.domain.Room
 import com.gamerfinder.gamerfinder.domain.enums.JoinRequestStatus
@@ -31,8 +32,11 @@ class RoomService(
     private val joinRequestRepository: JoinRequestRepository = JoinRequestRepository()
 ) {
 
-    fun getRooms(gameId: Long): List<RoomOutput> {
-        return roomRepositoryMock.getRooms(gameId).map { it.toOutput() }
+    fun getRoomsCreatedInLast30Minutes(gameId: Long): List<RoomOutput> {
+        val thirtyMinutesAgo = LocalDateTime.now().minusMinutes(MAX_ROOM_TIME_IN_MINUTES)
+        return roomRepository
+            .findByGameIdAndCreatedAtAfter(gameId, thirtyMinutesAgo)
+            .map { it.toOutput() }
     }
 
     fun createRoom(
@@ -40,7 +44,7 @@ class RoomService(
         playerId: Long,
         input: CreateRoomInput
     ): CreateRoomOutput {
-        if (roomRepositoryMock.existsByPlayerId(playerId)) {
+        if (roomRepository.existsById(playerId)) {
             throw RoomAlreadyExistsException("Player with id $playerId already have a room created!")
         }
         val player = playerRepository.findById(playerId).orElseThrow {
@@ -52,8 +56,7 @@ class RoomService(
             description = input.description,
             spots = input.spots,
             mode = input.mode,
-            ranks = input.ranks,
-            createdAt = LocalDateTime.now()
+            ranks = input.ranks
         )
         val savedRoom = roomRepository.save(room)
         if (savedRoom.id == null) {
@@ -65,30 +68,26 @@ class RoomService(
     }
 
     fun update(roomId: Long, input: UpdateRoomInput): UpdateRoomOutput {
-        if (roomRepositoryMock.exists(roomId).not()) {
-            throw ResourceNotFoundException("Room with id $roomId not found!")
+        val roomToUpdate = roomRepository.findById(roomId).orElseThrow {
+            ResourceNotFoundException("Room with id $roomId not found!")
         }
-        val roomToUpdate = roomRepositoryMock.getById(roomId)
-        val room = roomToUpdate.copy(
-            description = input.description,
-            spots = input.spots,
-            mode = input.mode,
-            ranks = input.ranks
-        )
-        roomRepositoryMock.updateRoom(room)
+        roomToUpdate.description = input.description
+        roomToUpdate.spots = input.spots
+        roomToUpdate.mode = input.mode
+        roomToUpdate.ranks = input.ranks
         return UpdateRoomOutput(
-            description = room.description,
-            spots = room.spots,
-            mode = room.mode,
-            ranks = room.ranks
+            description = roomToUpdate.description,
+            spots = roomToUpdate.spots,
+            mode = roomToUpdate.mode,
+            ranks = roomToUpdate.ranks
         )
     }
 
     fun delete(roomId: Long): ResponseEntity<Any> {
-        if (roomRepositoryMock.exists(roomId).not()) {
+        if (roomRepository.existsById(roomId).not()) {
             throw ResourceNotFoundException("Room with id $roomId not found!")
         }
-        roomRepositoryMock.deleteRoom(roomId)
+        roomRepository.deleteById(roomId)
         return ResponseEntity.noContent().build()
     }
 

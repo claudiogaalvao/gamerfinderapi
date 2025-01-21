@@ -4,7 +4,6 @@ import com.gamerfinder.gamerfinder.dtos.input.CreateJoinRequestInput
 import com.gamerfinder.gamerfinder.dtos.input.CreateRoomInput
 import com.gamerfinder.gamerfinder.dtos.input.UpdateRoomInput
 import com.gamerfinder.gamerfinder.dtos.output.CreateRoomOutput
-import com.gamerfinder.gamerfinder.dtos.output.PendingJoinRequestOutput
 import com.gamerfinder.gamerfinder.dtos.output.RoomOutput
 import com.gamerfinder.gamerfinder.dtos.output.UpdateRoomOutput
 import com.gamerfinder.gamerfinder.service.RoomService
@@ -32,7 +31,7 @@ class RoomController(
 
     @GetMapping("/{gameId}")
     fun getRooms(@PathVariable gameId: Long): List<RoomOutput> {
-        return service.getRooms(gameId)
+        return service.getRoomsCreatedInLast30Minutes(gameId)
     }
 
     @PostMapping  // TODO requires authentication
