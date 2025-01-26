@@ -16,7 +16,7 @@ data class Game(
     val name: String,
     val bannerUrl: String,
     val logoUrl: String,
-    val subscriptions: Int,
+    var subscriptions: Int,
     val minSubscriptions: Int,
     val rooms: Int? = null,
     @ElementCollection
@@ -30,15 +30,16 @@ data class Game(
     val platforms: List<Platforms>? = null,
 )
 
-fun List<Game>.toSummaryResponse() = mapIndexed { index, game ->
-    GameSummaryOutput(
-        id = game.id,
-        name = game.name,
-        bannerUrl = game.bannerUrl,
-        subscriptions = game.subscriptions,
-        minSubscriptions = game.minSubscriptions,
-        locked = game.subscriptions <= game.minSubscriptions,
-        rooms = game.rooms,
-        displayOrder = index + 1,
+fun Game.toSummaryResponse(index: Int, subscribed: Boolean): GameSummaryOutput {
+    return GameSummaryOutput(
+        id = this.id,
+        name = this.name,
+        bannerUrl = this.bannerUrl,
+        subscribed = subscribed,
+        subscriptions = this.subscriptions,
+        minSubscriptions = this.minSubscriptions,
+        locked = this.subscriptions <= this.minSubscriptions,
+        rooms = this.rooms,
+        displayOrder = index,
     )
 }
