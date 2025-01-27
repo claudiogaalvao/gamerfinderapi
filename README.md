@@ -20,7 +20,7 @@ You can find the collection of the API endpoints mapped out in Postman at the fo
 ## Features
 
 - **Game & Room Management**: Players can create and manage game rooms.
-- **In-memory Data Storage**: Currently, data is stored in memory. Future improvements will integrate with a database.
+- **MySQL Integration**: Persistent data storage with MySQL, configured with JPA.
 - **Data Validation & Error Handling**: Requests are validated, and appropriate error responses are returned (e.g., 404 Not Found, 400 Bad Request).
 - **Separation of Concerns**: The API follows best practices for separation of concerns, including distinct models for requests, responses, and domain logic.
 
@@ -34,7 +34,9 @@ You can find the collection of the API endpoints mapped out in Postman at the fo
 
 - **Spring Boot**: Framework used for building the REST API.
 - **Kotlin**: Programming language used for implementing the API.
-- **In-memory Storage**: Data is temporarily stored in memory for now (to be replaced by a database in future versions).
+- **JPA (Java Persistence API)**: ORM framework for database operations.
+- **MySQL**: Relational database for persistent data storage.
+- **Docker**: Used to run the MySQL database in a container.
 
 ## Installation & Setup
 
@@ -60,7 +62,7 @@ To run this project locally:
 
 ## Future Enhancements
 
-- Integration with a persistent database (e.g., PostgreSQL, MySQL).
+- Integration with a persistent database (e.g., PostgreSQL, MySQL). [DONE]
 - Authentication and Authorization mechanisms to restrict access to certain endpoints.
 - Additional game and room features (e.g., request to join a room, private rooms, etc.).
 
