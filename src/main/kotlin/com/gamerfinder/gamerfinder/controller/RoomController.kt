@@ -9,6 +9,8 @@ import com.gamerfinder.gamerfinder.dtos.output.UpdateRoomOutput
 import com.gamerfinder.gamerfinder.service.RoomService
 import jakarta.transaction.Transactional
 import jakarta.validation.Valid
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -30,8 +32,11 @@ class RoomController(
 ) {
 
     @GetMapping("/{gameId}")
-    fun getRooms(@PathVariable gameId: Long): List<RoomOutput> {
-        return service.getRoomsCreatedInLast30Minutes(gameId)
+    fun getRooms(
+        @PathVariable gameId: Long,
+        pagination: Pageable
+    ): Page<RoomOutput> {
+        return service.getRoomsCreatedInLast30Minutes(gameId, pagination)
     }
 
     @PostMapping  // TODO requires authentication

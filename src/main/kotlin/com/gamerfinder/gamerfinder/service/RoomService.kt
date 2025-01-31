@@ -18,6 +18,8 @@ import com.gamerfinder.gamerfinder.repository.GameRepository
 import com.gamerfinder.gamerfinder.repository.JoinRequestRepository
 import com.gamerfinder.gamerfinder.repository.PlayerRepository
 import com.gamerfinder.gamerfinder.repository.RoomRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -31,10 +33,13 @@ class RoomService(
     private val joinRequestRepository: JoinRequestRepository = JoinRequestRepository()
 ) {
 
-    fun getRoomsCreatedInLast30Minutes(gameId: Long): List<RoomOutput> {
+    fun getRoomsCreatedInLast30Minutes(
+        gameId: Long,
+        pagination: Pageable
+    ): Page<RoomOutput> {
         val thirtyMinutesAgo = LocalDateTime.now().minusMinutes(MAX_ROOM_TIME_IN_MINUTES)
         return roomRepository
-            .findByGameIdAndCreatedAtAfter(gameId, thirtyMinutesAgo)
+            .findByGameIdAndCreatedAtAfter(gameId, thirtyMinutesAgo, pagination)
             .map { it.toOutput() }
     }
 
